@@ -6,4 +6,5 @@
     <dimen name="card_article_radius">5dp</dimen>
     <dimen name="article_height">160dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="nav_drawer_width">260dp</dimen>
 </resources>

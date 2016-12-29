@@ -10,6 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -23,6 +27,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.example.yavengy.hidemyteam.activity.FilterFragment;
+import com.example.yavengy.hidemyteam.activity.FragmentDrawer;
+import com.example.yavengy.hidemyteam.activity.HomeFragment;
+import com.example.yavengy.hidemyteam.activity.SkinFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,13 +48,15 @@ import java.util.List;
 import static com.example.yavengy.hidemyteam.DbBitmapUtility.getBytes;
 import static com.example.yavengy.hidemyteam.DbBitmapUtility.getImage;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener {
 
     private RecyclerView recyclerView;
     private ArticleAdapter adapter;
     private List<Article> articleList;
     private Toolbar mToolbar;
+    private FragmentDrawer drawerFragment;
     boolean emptyArray;
+
 
     SQLiteDatabase myDatabase;
 
@@ -190,8 +201,14 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
+        drawerFragment = (FragmentDrawer)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+        drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
+        drawerFragment.setDrawerListener(this);
 
         intent = new Intent(getApplicationContext(), ArticleView.class);
+
+        displayView(2);
 
         emptyArray = true;
 
@@ -482,6 +499,42 @@ public class MainActivity extends AppCompatActivity {
     private int dpToPx(int dp) {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    @Override
+    public void onDrawerItemSelected(View view, int position) {
+        displayView(position);
+    }
+
+    private void displayView(int position) {
+        Fragment fragment = null;
+        String title = getString(R.string.app_name);
+        switch (position) {
+            case 0:
+                fragment = new SkinFragment();
+                title = getString(R.string.title_home);
+                break;
+            case 1:
+                fragment = new SkinFragment();
+                title = getString(R.string.title_friends);
+                break;
+            case 2:
+                fragment = new SkinFragment();
+                title = getString(R.string.title_messages);
+                break;
+            default:
+                break;
+        }
+
+        if (fragment != null) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.container_body, fragment);
+            fragmentTransaction.commit();
+
+            // set the toolbar title
+            getSupportActionBar().setTitle(title);
+        }
     }
 
 }
