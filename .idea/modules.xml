@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HideMyTeam.iml" filepath="$PROJECT_DIR$/HideMyTeam.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/hide_my_team.iml" filepath="$PROJECT_DIR$/hide_my_team.iml" />
     </modules>
   </component>
 </project>

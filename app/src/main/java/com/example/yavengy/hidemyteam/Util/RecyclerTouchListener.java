@@ -1,10 +1,12 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.Util;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+
+import com.example.yavengy.hidemyteam.activity.MainActivity;
 
 /**
  * Created by yavengy on 12/17/16.

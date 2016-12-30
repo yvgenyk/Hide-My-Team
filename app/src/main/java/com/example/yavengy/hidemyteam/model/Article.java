@@ -1,4 +1,4 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.model;
 
 import android.graphics.Bitmap;
 

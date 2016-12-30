@@ -1,70 +1,65 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.activity;
 
-import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.example.yavengy.hidemyteam.model.Filter;
+import com.example.yavengy.hidemyteam.adapter.FilterAdaptor;
+import com.example.yavengy.hidemyteam.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class FilterTeams extends AppCompatActivity {
+public class FilterFragment extends Fragment {
 
     private List<Filter> filterList = new ArrayList<>();
     private RecyclerView recyclerView;
     private FilterAdaptor mAdapter;
-    private Toolbar mToolbar;
-    Intent filterIntent;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_filter, menu);
-        return true;
+    public FilterFragment() {
+        // Required empty public constructor
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        filterIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_back) {
-            startActivity(filterIntent);
-
-            //return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_filter_teams);
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+    }
 
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_filter, container, false);
 
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
         mAdapter = new FilterAdaptor(filterList);
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(mAdapter);
 
         prepareFilterData();
+
+        // Inflate the layout for this fragment
+        return rootView;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
     }
 
     private void prepareFilterData(){
@@ -115,4 +110,5 @@ public class FilterTeams extends AppCompatActivity {
         mAdapter.notifyDataSetChanged();
 
     }
+
 }

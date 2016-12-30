@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">Hide My Team</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+
+    <string name="nav_item_home">Home</string>
+    <string name="nav_item_filters">Filter</string>
+    <string name="nav_item_skin">Change Skin</string>
+
+    <!-- navigation drawer item labels  -->
+    <string-array name="nav_drawer_labels">
+        <item>@string/nav_item_home</item>
+        <item>@string/nav_item_filters</item>
+        <item>@string/nav_item_skin</item>
+    </string-array>
+
+    <string name="title_change_skin">Change skin</string>
+    <string name="title_filters">Filters</string>
+    <string name="title_home">Home</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

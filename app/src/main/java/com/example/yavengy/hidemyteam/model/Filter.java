@@ -1,4 +1,4 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.model;
 
 /**
  * Created by yavengy on 12/17/16.

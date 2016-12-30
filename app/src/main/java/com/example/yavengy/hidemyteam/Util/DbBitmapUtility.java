@@ -1,4 +1,4 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.Util;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

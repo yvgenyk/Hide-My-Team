@@ -1,4 +1,4 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.activity;
 
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.example.yavengy.hidemyteam.R;
 
 public class ArticleView extends AppCompatActivity {
 
