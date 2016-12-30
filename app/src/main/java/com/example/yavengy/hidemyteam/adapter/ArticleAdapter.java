@@ -1,4 +1,4 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.yavengy.hidemyteam.R;
+import com.example.yavengy.hidemyteam.model.Article;
 
 import java.util.List;
 

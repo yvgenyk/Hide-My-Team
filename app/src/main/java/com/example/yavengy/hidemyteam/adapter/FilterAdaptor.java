@@ -1,23 +1,22 @@
-package com.example.yavengy.hidemyteam;
+package com.example.yavengy.hidemyteam.adapter;
 
 /**
  * Created by yavengy on 12/17/16.
  */
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import com.example.yavengy.hidemyteam.R;
+import com.example.yavengy.hidemyteam.model.Filter;
+
 import java.util.List;
 
-import static com.example.yavengy.hidemyteam.MainActivity.filterArray;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.filterArray;
 
 public class FilterAdaptor extends RecyclerView.Adapter<FilterAdaptor.MyViewHolder> {
 
