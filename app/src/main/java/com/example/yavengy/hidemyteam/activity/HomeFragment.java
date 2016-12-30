@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.yavengy.hidemyteam.Util.TagNFilters;
 import com.example.yavengy.hidemyteam.model.Article;
 import com.example.yavengy.hidemyteam.adapter.ArticleAdapter;
 import com.example.yavengy.hidemyteam.R;
@@ -42,7 +43,7 @@ import java.util.List;
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getImage;
-import static com.example.yavengy.hidemyteam.activity.MainActivity.filterArray;
+import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
 
 public class HomeFragment extends Fragment {
 
@@ -51,21 +52,13 @@ public class HomeFragment extends Fragment {
     private List<Article> articleList;
     boolean emptyArray;
 
+    TagNFilters tagsNFilters;
+
     Intent intent;
 
     SQLiteDatabase myDatabase;
 
     SQLiteStatement insertStmt;
-
-    final String tags[] = {"boston-celtics", "brooklyn-nets", "new-york-knicks", "philadelphia-76ers",
-            "toronto-raptors", "golden-state-warriors", "los-angeles-clippers",
-            "los-angeles-lakers", "phoenix-suns", "sacramento-kings", "chicago-bulls",
-            "cleveland-cavaliers", "detroit-pistons", "indiana-pacers", "milwaukee-bucks",
-            "atlanta-hawks", "charlotte-hornets", "miami-heat", "orlando-magic",
-            "washington-wizards", "denver-nuggets", "minnesota-timberwolves",
-            "oklahoma-city-thunder", "portland-trail-blazers", "utah-jazz",
-            "dallas-mavericks", "houston-rockets", "memphis-grizzlies",
-            "new-orleans-pelicans", "san-antonio-spurs"};
 
     public HomeFragment() {
         // Required empty public constructor
@@ -74,6 +67,8 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        tagsNFilters = new TagNFilters(getActivity().getString(R.string.tags_api_call));
 
         emptyArray = true;
 
@@ -259,24 +254,7 @@ public class HomeFragment extends Fragment {
 
     public void getArticles() {
 
-        int correctIndex = 0;
-
-        String filteredTags = "";
-
-        for(int i = 0; i < filterArray.length; i++){
-
-            if(i != 0 && i != 6 && i != 12 && i != 18 && i != 24 && i != 30){
-
-                if (filterArray[i] == 1) {
-                    filteredTags += tags[correctIndex] + ",";
-                }
-                correctIndex++;
-            }
-        }
-
-        if (filteredTags.length() > 1) {
-            filteredTags = filteredTags.substring(0, filteredTags.length() - 1);
-        }
+        String filteredTags = tagsNFilters.getTags();;
 
         String url = "http://bleacherreport.com/api/front/lead_articles.json?tags=" +
                 filteredTags + "&appversion=1.4&perpage=40";
