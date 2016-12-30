@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.yavengy.hidemyteam.R;
+import com.example.yavengy.hidemyteam.Util.TopCropImageView;
 import com.example.yavengy.hidemyteam.model.Article;
 
 import java.util.List;
@@ -20,12 +21,12 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
-        public ImageView image;
+        public TopCropImageView image;
 
         public MyViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.title);
-            image = (ImageView) view.findViewById(R.id.checkBox);
+            image = (TopCropImageView) view.findViewById(R.id.checkBox);
         }
     }
 

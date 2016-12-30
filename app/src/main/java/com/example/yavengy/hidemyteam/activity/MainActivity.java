@@ -20,11 +20,6 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
     private FragmentDrawer drawerFragment;
     private boolean isHomePage = true;
 
-    Intent filterIntent;
-
-    public static int[] filterArray = {0,0,0,0,0,0,
-            0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
     public interface ClickListener {
         void onClick(View view, int position);
 

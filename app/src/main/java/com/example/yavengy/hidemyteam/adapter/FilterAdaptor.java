@@ -16,7 +16,7 @@ import com.example.yavengy.hidemyteam.model.Filter;
 
 import java.util.List;
 
-import static com.example.yavengy.hidemyteam.activity.MainActivity.filterArray;
+import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
 
 public class FilterAdaptor extends RecyclerView.Adapter<FilterAdaptor.MyViewHolder> {
 
