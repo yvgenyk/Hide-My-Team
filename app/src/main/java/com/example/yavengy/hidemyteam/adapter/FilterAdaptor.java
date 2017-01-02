@@ -17,6 +17,8 @@ import com.example.yavengy.hidemyteam.model.Filter;
 import java.util.List;
 
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.getMainContext;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.saveFilters;
 
 public class FilterAdaptor extends RecyclerView.Adapter<FilterAdaptor.MyViewHolder> {
 
@@ -42,7 +44,6 @@ public class FilterAdaptor extends RecyclerView.Adapter<FilterAdaptor.MyViewHold
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.filter_team_row, parent, false);
-
 
 
         return new MyViewHolder(itemView);
@@ -77,8 +78,10 @@ public class FilterAdaptor extends RecyclerView.Adapter<FilterAdaptor.MyViewHold
 
                 if(isChecked){
                     filterArray[currentPosition] = 1;
+                    saveFilters(Integer.toString(currentPosition), 1, getMainContext());
                 } else {
                     filterArray[currentPosition] = 0;
+                    saveFilters(Integer.toString(currentPosition), 0, getMainContext());
                 }
             }
         });

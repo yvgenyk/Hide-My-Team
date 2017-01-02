@@ -1,6 +1,9 @@
 package com.example.yavengy.hidemyteam.activity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -8,17 +11,21 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
 import com.example.yavengy.hidemyteam.R;
 
+import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
+
 public class MainActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener {
 
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private boolean isHomePage = true;
+    public static Context mainContext;
 
     public interface ClickListener {
         void onClick(View view, int position);
@@ -55,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
         if (id == R.id.action_back) {
             isHomePage = true;
             updateMenu();
+            saveFilterArray();
             displayView(0);
             //return true;
         }
@@ -67,12 +75,44 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mainContext = getApplicationContext();
+
+        loadFilterArray();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         updateMenu();
 
+        for(int i:filterArray){
+            Log.i("arra", Integer.toString(i));
+        }
+
         displayView(0);
 
+    }
+
+    private void loadFilterArray(){
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(mainContext);
+
+        int value;
+
+        for (int i = 0; i < filterArray.length; i++) {
+
+            value = preferences.getInt(Integer.toString(i), 2);
+            if(value == 2){
+                filterArray[i] = 0;
+            } else {
+                filterArray[i] = value;
+            }
+        }
+    }
+
+    private void saveFilterArray(){
+
+        for (int i = 0; i < filterArray.length; i++) {
+            saveFilters(Integer.toString(i), filterArray[i], mainContext);
+        }
     }
 
     private void updateMenu(){
@@ -124,6 +164,17 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
             // set the toolbar title
             getSupportActionBar().setTitle(title);
         }
+    }
+
+    public static Context getMainContext(){
+        return mainContext;
+    }
+
+    public static void saveFilters(String key, int value, Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, value);
+        editor.apply();
     }
 
 }
