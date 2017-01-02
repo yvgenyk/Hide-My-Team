@@ -16,6 +16,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +46,7 @@ import static android.content.Context.MODE_PRIVATE;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getImage;
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.mainContext;
 
 public class HomeFragment extends Fragment {
 

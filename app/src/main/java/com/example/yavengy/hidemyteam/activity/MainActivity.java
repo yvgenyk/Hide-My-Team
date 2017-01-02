@@ -11,6 +11,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
     private FragmentDrawer drawerFragment;
     private boolean isHomePage = true;
     public static Context mainContext;
+    public static int screenWidth;
 
     public interface ClickListener {
         void onClick(View view, int position);
@@ -79,13 +81,11 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
 
         loadFilterArray();
 
+        screenWidth = getScreenWidth();
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
 
         updateMenu();
-
-        for(int i:filterArray){
-            Log.i("arra", Integer.toString(i));
-        }
 
         displayView(0);
 
@@ -140,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
                 fragment = new HomeFragment();
                 title = getString(R.string.title_home);
                 isHomePage = true;
+                saveFilterArray();
                 break;
             case 1:
                 fragment = new FilterFragment();
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
                 fragment = new SkinFragment();
                 title = getString(R.string.title_change_skin);
                 isHomePage = false;
+
                 break;
             default:
                 break;
@@ -175,6 +177,12 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
         SharedPreferences.Editor editor = prefs.edit();
         editor.putInt(key, value);
         editor.apply();
+    }
+
+    public int getScreenWidth(){
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        return displaymetrics.widthPixels;
     }
 
 }
