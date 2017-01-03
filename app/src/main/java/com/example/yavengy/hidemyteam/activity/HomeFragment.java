@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -24,7 +25,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.yavengy.hidemyteam.Util.DataBase;
 import com.example.yavengy.hidemyteam.Util.TagNFilters;
+import com.example.yavengy.hidemyteam.helper.SimpleItemTouchHelperCallback;
 import com.example.yavengy.hidemyteam.model.Article;
 import com.example.yavengy.hidemyteam.adapter.ArticleAdapter;
 import com.example.yavengy.hidemyteam.R;
@@ -41,12 +44,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static android.content.Context.MODE_PRIVATE;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getImage;
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
-import static com.example.yavengy.hidemyteam.activity.MainActivity.mainContext;
 
 public class HomeFragment extends Fragment {
 
@@ -55,13 +58,13 @@ public class HomeFragment extends Fragment {
     private List<Article> articleList;
     boolean emptyArray;
 
+    DataBase myDataBaseClass;
+
     TagNFilters tagsNFilters;
 
     Intent intent;
 
     SQLiteDatabase myDatabase;
-
-    SQLiteStatement insertStmt;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -81,16 +84,6 @@ public class HomeFragment extends Fragment {
                 break;
             }
         }
-
-        try {
-            myDatabase = getActivity().openOrCreateDatabase("Aticles", MODE_PRIVATE, null);
-            //myDatabase.execSQL("DROP TABLE IF EXISTS articlesDb");
-            myDatabase.execSQL("CREATE TABLE IF NOT EXISTS articlesDb (id INTEGER PRIMARY KEY, title VARCHAR, image VARCHAR, permalink VARCHAR, codedImage BLOB)");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        //prepareArticles();
     }
 
     @Override
@@ -98,10 +91,19 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
+        myDataBaseClass = new DataBase();
+
+        articleList = new ArrayList<>();
+        adapter = new ArticleAdapter(getActivity(), articleList);
+
         intent = new Intent(getActivity().getApplicationContext(), ArticleView.class);
 
         getArticles();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
+        ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
+        touchHelper.attachToRecyclerView(recyclerView);
 
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(getActivity(), 1);
         recyclerView.setLayoutManager(mLayoutManager);
@@ -113,7 +115,7 @@ public class HomeFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new MainActivity.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                String permalink = findPermalink(articleList.get(position).getTitle());
+                String permalink = myDataBaseClass.getArticleLink(articleList.get(position).getTitle());
                 intent.putExtra("permalink", permalink);
                 startActivity(intent);
             }
@@ -144,8 +146,6 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        //prepareArticles();
-
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -159,13 +159,6 @@ public class HomeFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
     }
-
-    public interface ClickListener {
-        void onClick(View view, int position);
-
-        void onLongClick(View view, int position);
-    }
-
 
     public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
@@ -248,8 +241,8 @@ public class HomeFragment extends Fragment {
 
     public void updateList(){
 
-        articleList = new ArrayList<>();
-        adapter = new ArticleAdapter(getActivity(), articleList);
+        //articleList = new ArrayList<>();
+        //adapter = new ArticleAdapter(getActivity(), articleList);
 
         recyclerView.setAdapter(adapter);
 
@@ -272,66 +265,13 @@ public class HomeFragment extends Fragment {
 
         updateList();
 
-        try {
+        articleList = myDataBaseClass.getArticles();
 
-            Cursor c = myDatabase.rawQuery("SELECT * FROM articlesDb", null);
-
-
-            int titleIndex = c.getColumnIndex("title");
-            int titleImage = c.getColumnIndex("image");
-            int cImageIndex = c.getColumnIndex("codedImage");
-
-            c.moveToLast();
-            Article newArticle = new Article();
-            newArticle.setTitle(c.getString(titleIndex));
-            newArticle.setImage(getImage(c.getBlob(cImageIndex)));
-            articleList.add(newArticle);
-
-            while (c.moveToPrevious()) {
-                newArticle = new Article();
-                newArticle.setTitle(c.getString(titleIndex));
-                newArticle.setImage(getImage(c.getBlob(cImageIndex)));
-                articleList.add(newArticle);
-            }
-
-            c.close();
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+        adapter.updateList(articleList);
 
         adapter.notifyDataSetChanged();
     }
 
-    public String findPermalink(String title) {
-
-        try {
-
-            Cursor c = myDatabase.rawQuery("SELECT * FROM articlesDb", null);
-
-            int titleIndex = c.getColumnIndex("title");
-            int permalinkIndex = c.getColumnIndex("permalink");
-
-            c.moveToFirst();
-
-            if (title.equals(c.getString(titleIndex))) {
-                return c.getString(permalinkIndex);
-            }
-
-            while (c.moveToNext()) {
-
-                if (title.equals(c.getString(titleIndex))) {
-                    return c.getString(permalinkIndex);
-                }
-            }
-
-            c.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return "Error";
-    }
 
     public void saveToDb (String result){
 
@@ -339,37 +279,14 @@ public class HomeFragment extends Fragment {
 
         if (result != null) {
 
-            String allArticles = "";
+            String allArticles = myDataBaseClass.getAllPermalinks();
 
             try {
-
-                try {
-
-                    Cursor c = myDatabase.rawQuery("SELECT * FROM articlesDb", null);
-
-                    int permalinkIndex = c.getColumnIndex("permalink");
-
-                    c.moveToFirst();
-
-                    allArticles += c.getString((permalinkIndex)) + " ";
-
-                    while (c.moveToNext()) {
-
-                        allArticles += c.getString((permalinkIndex)) + " ";
-
-                    }
-
-                    c.close();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
                 JSONArray arr = new JSONArray(result);
 
                 for (int i = 0; i < arr.length(); i++) {
 
-                    //Log.i("runs", Integer.toString(i));
 
                     if (!arr.get(i).toString().equals("null")) {
                         if (arr.getJSONObject(i).has("tag")) {
@@ -381,30 +298,19 @@ public class HomeFragment extends Fragment {
 
                             if (!allArticles.contains(arr.getJSONObject(i).getString("permalink"))) {
 
-                                try {
-
-                                    String sql = "INSERT INTO articlesDb (title, codedImage, permalink) VALUES (?, ?, ?)";
-
-                                    insertStmt = myDatabase.compileStatement(sql);
-
-                                    insertStmt.clearBindings();
-
-                                    insertStmt.bindString(1, title);
-                                    insertStmt.bindBlob(2, getBytes(new HomeFragment.DownloadImage().execute(arr.getJSONObject(i).getString("primary_image_650x440")).get()));
-                                    insertStmt.bindString(3, arr.getJSONObject(i).getString("permalink"));
-
-                                    insertStmt.executeInsert();
-
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
+                                myDataBaseClass.saveArticle(title,
+                                        getBytes(new HomeFragment.DownloadImage().execute(arr.getJSONObject(i).getString("primary_image_650x440")).get()),
+                                        arr.getJSONObject(i).getString("permalink"));
                             }
                         }
                     }
                 }
 
             } catch (JSONException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
                 e.printStackTrace();
             }
         }
