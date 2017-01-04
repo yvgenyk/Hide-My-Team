@@ -1,29 +1,40 @@
 package com.example.yavengy.hidemyteam.adapter;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.yavengy.hidemyteam.R;
+import com.example.yavengy.hidemyteam.Util.DataBase;
 import com.example.yavengy.hidemyteam.Util.TopCropImageView;
+import com.example.yavengy.hidemyteam.activity.MainActivity;
 import com.example.yavengy.hidemyteam.model.Article;
 
+import java.util.Collections;
 import java.util.List;
 
+import static android.content.Context.MODE_PRIVATE;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.getMainContext;
 import static com.example.yavengy.hidemyteam.activity.MainActivity.mainContext;
 import static com.example.yavengy.hidemyteam.activity.MainActivity.screenWidth;
+import com.example.yavengy.hidemyteam.helper.ItemTouchHelperAdapter;
 
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHolder> {
+public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHolder>
+        implements ItemTouchHelperAdapter {
 
     private Context mContext;
     private List<Article> articleList;
+    private DataBase myDataBase;
 
+    public void updateList(List<Article> newList){
+        articleList = newList;
+        myDataBase = new DataBase();
+    }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
@@ -64,14 +75,20 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
         holder.title.getLayoutParams().height = textHeight;
         holder.image.getLayoutParams().height = imageHeight;
 
-        Log.i("title", String.valueOf(textHeight));
-        Log.i("image", String.valueOf(imageHeight));
-        Log.i("width", String.valueOf(width));
     }
 
     @Override
     public int getItemCount() {
         return articleList.size();
+    }
+
+    //@Override
+    public void onItemDismiss(int position) {
+        myDataBase.markDeleted(articleList.get(position).getTitle());
+
+        articleList.remove(position);
+        notifyItemRemoved(position);
+
     }
 
 }
