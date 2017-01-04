@@ -84,7 +84,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
     //@Override
     public void onItemDismiss(int position) {
-        Log.i("title", articleList.get(position).getTitle());
         myDataBase.markDeleted(articleList.get(position).getTitle());
 
         articleList.remove(position);
