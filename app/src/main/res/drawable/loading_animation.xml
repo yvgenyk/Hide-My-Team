@@ -41,5 +41,5 @@
     <item android:drawable="@drawable/tmp37" android:duration="50" />
     <item android:drawable="@drawable/tmp38" android:duration="50" />
     <item android:drawable="@drawable/tmp39" android:duration="50" />
-
+    <item android:drawable="@drawable/tmp40" android:duration="50" />
 </animation-list>

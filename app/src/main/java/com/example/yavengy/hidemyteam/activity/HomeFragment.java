@@ -102,6 +102,8 @@ public class HomeFragment extends Fragment {
         loadingViewAnim = (AnimationDrawable) loadingIcon.getBackground();
         loadingIcon.setVisibility(View.VISIBLE);
 
+        loadingViewAnim.start();
+
         myDataBaseClass = new DataBase();
 
         articleList = new ArrayList<>();
@@ -206,8 +208,6 @@ public class HomeFragment extends Fragment {
             URL url;
             HttpURLConnection urlConnection = null;
 
-            loadingViewAnim.start();
-
             try {
                 url = new URL(urls[0]);
 
@@ -284,9 +284,9 @@ public class HomeFragment extends Fragment {
 
         adapter.notifyDataSetChanged();
 
-        loadingIcon.animate().alpha(0.0f).setDuration(100);
+        loadingIcon.setVisibility(View.GONE);
 
-        loadingViewAnim.stop();
+        //loadingViewAnim.stop();
 
     }
 
