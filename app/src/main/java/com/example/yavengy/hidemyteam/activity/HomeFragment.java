@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,6 +24,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.yavengy.hidemyteam.Util.DataBase;
@@ -58,6 +60,9 @@ public class HomeFragment extends Fragment {
     private List<Article> articleList;
     boolean emptyArray;
 
+    public ImageView loadingIcon = null;
+    private AnimationDrawable loadingViewAnim = null;
+
     DataBase myDataBaseClass;
 
     TagNFilters tagsNFilters;
@@ -90,6 +95,12 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+
+        loadingIcon = (ImageView) rootView.findViewById(R.id.loadingView);
+
+        loadingIcon.setBackgroundResource(R.drawable.loading_animation);
+        loadingViewAnim = (AnimationDrawable) loadingIcon.getBackground();
+        loadingIcon.setVisibility(View.VISIBLE);
 
         myDataBaseClass = new DataBase();
 
@@ -195,6 +206,8 @@ public class HomeFragment extends Fragment {
             URL url;
             HttpURLConnection urlConnection = null;
 
+            loadingViewAnim.start();
+
             try {
                 url = new URL(urls[0]);
 
@@ -270,6 +283,11 @@ public class HomeFragment extends Fragment {
         adapter.updateList(articleList);
 
         adapter.notifyDataSetChanged();
+
+        loadingIcon.animate().alpha(0.0f).setDuration(100);
+
+        loadingViewAnim.stop();
+
     }
 
 
