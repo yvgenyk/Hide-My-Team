@@ -59,6 +59,7 @@ public class DeletedAdapter extends RecyclerView.Adapter<DeletedAdapter.MyViewHo
 
                 String permalink = article.getPermalink();
                 intent.putExtra("permalink", permalink);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 mainContext.startActivity(intent);
 
             }
