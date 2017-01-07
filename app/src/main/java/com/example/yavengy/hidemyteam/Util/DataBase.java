@@ -9,6 +9,7 @@ import android.util.Log;
 import com.example.yavengy.hidemyteam.activity.HomeFragment;
 import com.example.yavengy.hidemyteam.activity.MainActivity;
 import com.example.yavengy.hidemyteam.model.Article;
+import com.example.yavengy.hidemyteam.model.DeletedArticle;
 
 import java.sql.Blob;
 import java.util.ArrayList;
@@ -73,6 +74,43 @@ public class DataBase{
         }
 
         return articleList;
+    }
+
+    public List<DeletedArticle> getDeletedArticles(){
+
+        List<DeletedArticle> articleList = new ArrayList<>();;
+
+        try {
+            Cursor c = myDatabase.rawQuery("SELECT * FROM articlesDb", null);
+
+            int titleIndex = c.getColumnIndex("title");
+            int permalinkIndex = c.getColumnIndex("permalink");
+            int deletedIndex = c.getColumnIndex("deleted");
+
+            c.moveToLast();
+            DeletedArticle delArticle = new DeletedArticle();
+            if(c.getString(deletedIndex).equals("1")) {
+                delArticle.setTitle(c.getString(titleIndex));
+                delArticle.setPermalink(c.getString(permalinkIndex));
+
+                articleList.add(delArticle);
+            }
+            while (c.moveToPrevious()) {
+                delArticle = new DeletedArticle();
+                if(c.getString(deletedIndex).equals("1")) {
+                    delArticle.setTitle(c.getString(titleIndex));
+                    delArticle.setPermalink(c.getString(permalinkIndex));
+                    articleList.add(delArticle);
+                }
+            }
+
+            c.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return articleList;
+
     }
 
     public String getArticleLink(String title){
