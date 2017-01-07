@@ -31,7 +31,6 @@ public class SkinFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_skin, container, false);
 
-
         // Inflate the layout for this fragment
         return rootView;
     }
