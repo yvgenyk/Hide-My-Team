@@ -151,7 +151,11 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
                 fragment = new SkinFragment();
                 title = getString(R.string.title_change_skin);
                 isHomePage = false;
-
+                break;
+            case 3:
+                fragment = new DeletedArticlesFragment();
+                title = getString(R.string.title_deleted_articles);
+                isHomePage = false;
                 break;
             default:
                 break;

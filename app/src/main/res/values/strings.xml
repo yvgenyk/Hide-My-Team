@@ -10,16 +10,22 @@
     <string name="nav_item_home">Home</string>
     <string name="nav_item_filters">Filter</string>
     <string name="nav_item_skin">Change Skin</string>
+    <string name="nav_deleted_articles">Deleted Articles</string>
 
     <!-- navigation drawer item labels  -->
     <string-array name="nav_drawer_labels">
         <item>@string/nav_item_home</item>
         <item>@string/nav_item_filters</item>
         <item>@string/nav_item_skin</item>
+        <item>@string/nav_deleted_articles</item>
     </string-array>
 
     <string name="title_change_skin">Change skin</string>
     <string name="title_filters">Filters</string>
     <string name="title_home">Home</string>
+    <string name="title_deleted_articles">Deleted Articles</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

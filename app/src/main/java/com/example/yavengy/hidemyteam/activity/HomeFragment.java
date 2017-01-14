@@ -3,9 +3,7 @@ package com.example.yavengy.hidemyteam.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -18,8 +16,6 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,9 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static android.content.Context.MODE_PRIVATE;
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
-import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getImage;
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
 
 public class HomeFragment extends Fragment {
@@ -68,8 +62,6 @@ public class HomeFragment extends Fragment {
     TagNFilters tagsNFilters;
 
     Intent intent;
-
-    SQLiteDatabase myDatabase;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -253,12 +245,7 @@ public class HomeFragment extends Fragment {
     }
 
     public void updateList(){
-
-        //articleList = new ArrayList<>();
-        //adapter = new ArticleAdapter(getActivity(), articleList);
-
         recyclerView.setAdapter(adapter);
-
     }
 
     public void getArticles() {
