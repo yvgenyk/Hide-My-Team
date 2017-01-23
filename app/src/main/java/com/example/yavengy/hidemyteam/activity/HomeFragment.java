@@ -16,6 +16,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,6 +47,7 @@ import java.util.concurrent.ExecutionException;
 
 import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
+import static com.example.yavengy.hidemyteam.activity.MainActivity.fab;
 
 public class HomeFragment extends Fragment {
 
@@ -131,7 +133,6 @@ public class HomeFragment extends Fragment {
             }
         }));
 
-        FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
