@@ -1,8 +1,6 @@
 package com.example.yavengy.hidemyteam.adapter;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -11,15 +9,12 @@ import android.widget.TextView;
 
 import com.example.yavengy.hidemyteam.R;
 import com.example.yavengy.hidemyteam.Util.DataBase;
-import com.example.yavengy.hidemyteam.Util.TopCropImageView;
-import com.example.yavengy.hidemyteam.activity.MainActivity;
+import com.example.yavengy.hidemyteam.Parallax.InterpolatorSelector;
+import com.example.yavengy.hidemyteam.Parallax.PEWImageView;
 import com.example.yavengy.hidemyteam.model.Article;
 
-import java.util.Collections;
 import java.util.List;
 
-import static android.content.Context.MODE_PRIVATE;
-import static com.example.yavengy.hidemyteam.activity.MainActivity.getMainContext;
 import static com.example.yavengy.hidemyteam.activity.MainActivity.mainContext;
 import static com.example.yavengy.hidemyteam.activity.MainActivity.screenWidth;
 import com.example.yavengy.hidemyteam.helper.ItemTouchHelperAdapter;
@@ -38,12 +33,12 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView title;
-        public TopCropImageView image;
+        public PEWImageView image;
 
         public MyViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.title);
-            image = (TopCropImageView) view.findViewById(R.id.image);
+            image = (PEWImageView) view.findViewById(R.id.image);
         }
     }
 
@@ -74,6 +69,8 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
         holder.title.getLayoutParams().height = textHeight;
         holder.image.getLayoutParams().height = imageHeight;
+
+        holder.image.setInterpolator(InterpolatorSelector.interpolatorId(6));
 
     }
 
