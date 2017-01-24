@@ -5,7 +5,7 @@
     <dimen name="article_margin">5dp</dimen>
     <dimen name="card_article_radius">3dp</dimen>
     <dimen name="article_height">180dp</dimen>
-    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="fab_margin">32dp</dimen>
     <dimen name="nav_drawer_width">260dp</dimen>
     <dimen name="card_text_size">16sp</dimen>
     <dimen name="card_text_padding">5dp</dimen>
