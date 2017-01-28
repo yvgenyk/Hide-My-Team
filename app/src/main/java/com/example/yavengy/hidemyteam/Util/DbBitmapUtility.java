@@ -1,9 +1,14 @@
 package com.example.yavengy.hidemyteam.Util;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.ByteArrayOutputStream;
+import java.lang.ref.WeakReference;
 
 /**
  * Created by yavengy on 12/10/16.
@@ -19,7 +24,7 @@ public class DbBitmapUtility {
     }
 
     // convert from byte array to bitmap
-    public static Bitmap getImage(byte[] image) {
+    public static Bitmap getDecImage(byte[] image) {
         return BitmapFactory.decodeByteArray(image, 0, image.length);
     }
 

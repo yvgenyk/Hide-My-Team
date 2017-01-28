@@ -92,6 +92,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         loadingIcon = (ImageView) rootView.findViewById(R.id.loadingView);
@@ -104,7 +105,7 @@ public class HomeFragment extends Fragment {
 
         myDataBaseClass = new DataBase();
 
-        getArticles();
+        //getArticles();
 
         articleList = new ArrayList<>();
         displayedArticles = new ArrayList<>();
@@ -140,7 +141,7 @@ public class HomeFragment extends Fragment {
         recyclerView.addItemDecoration(new HomeFragment.GridSpacingItemDecoration(2, dpToPx(0), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        updateList();
+        //updateList();
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new MainActivity.ClickListener() {
             @Override
@@ -175,6 +176,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        prepareArticles();
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -369,7 +371,6 @@ public class HomeFragment extends Fragment {
             }
         }
         prepareArticles();
-
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

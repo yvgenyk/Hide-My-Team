@@ -16,8 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.MODE_PRIVATE;
-import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
-import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getImage;
+
 import static com.example.yavengy.hidemyteam.activity.MainActivity.mainContext;
 
 /**
@@ -56,14 +55,14 @@ public class DataBase{
             if(c.getString(deletedIndex).equals("0")) {
                 newArticle.setTitle(c.getString(titleIndex));
 
-                newArticle.setImage(getImage(c.getBlob(cImageIndex)));
+                newArticle.setByteArray(c.getBlob(cImageIndex));
                 articleList.add(newArticle);
             }
             while (c.moveToPrevious()) {
                 newArticle = new Article();
                 if(c.getString(deletedIndex).equals("0")) {
                     newArticle.setTitle(c.getString(titleIndex));
-                    newArticle.setImage(getImage(c.getBlob(cImageIndex)));
+                    newArticle.setByteArray(c.getBlob(cImageIndex));
                     articleList.add(newArticle);
                 }
             }

@@ -30,8 +30,6 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
     private final int VIEW_TYPE_LOADING = 1;
     private OnLoadMoreListener mOnLoadMoreListener;
     private boolean isLoading = false, isMoreDataAvailable = true;
-    private int visibleThreshold = 10;
-
 
     public void updateList(List<Article> newList){
         articleList = newList;
