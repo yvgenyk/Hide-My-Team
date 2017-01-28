@@ -3,21 +3,17 @@ package com.example.yavengy.hidemyteam.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,6 +55,7 @@ public class HomeFragment extends Fragment {
     private List<Article> displayedArticles;
     private boolean emptyArray;
     private int currentMaxIndex = 0;
+    private boolean downloadingArticles = false;
 
     public ImageView loadingIcon = null;
     private AnimationDrawable loadingViewAnim = null;
@@ -100,7 +97,6 @@ public class HomeFragment extends Fragment {
         loadingIcon.setBackgroundResource(R.drawable.loading_animation);
         loadingViewAnim = (AnimationDrawable) loadingIcon.getBackground();
         loadingIcon.setVisibility(View.VISIBLE);
-
         loadingViewAnim.start();
 
         myDataBaseClass = new DataBase();
@@ -168,11 +164,11 @@ public class HomeFragment extends Fragment {
                     }
                 }
 
-                if(!emptyArray) {
+                if(!downloadingArticles) {
                     getArticles();
+                    downloadingArticles = true;
+                    Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
                 }
-
-                Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -191,7 +187,7 @@ public class HomeFragment extends Fragment {
         super.onDetach();
     }
 
-    public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+        public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
         @Override
         protected Bitmap doInBackground(String... urls) {
@@ -371,6 +367,7 @@ public class HomeFragment extends Fragment {
             }
         }
         prepareArticles();
+        downloadingArticles = false;
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
