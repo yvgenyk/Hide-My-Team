@@ -14,6 +14,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 
 import com.example.yavengy.hidemyteam.Util.DataBase;
 import com.example.yavengy.hidemyteam.Util.TagNFilters;
+import com.example.yavengy.hidemyteam.helper.OnLoadMoreListener;
 import com.example.yavengy.hidemyteam.helper.SimpleItemTouchHelperCallback;
 import com.example.yavengy.hidemyteam.model.Article;
 import com.example.yavengy.hidemyteam.adapter.ArticleAdapter;
@@ -54,7 +56,9 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArticleAdapter adapter;
     private List<Article> articleList;
-    boolean emptyArray;
+    private List<Article> displayedArticles;
+    private boolean emptyArray;
+    private int currentMaxIndex = 0;
 
     public ImageView loadingIcon = null;
     private AnimationDrawable loadingViewAnim = null;
@@ -100,12 +104,31 @@ public class HomeFragment extends Fragment {
 
         myDataBaseClass = new DataBase();
 
+        getArticles();
+
         articleList = new ArrayList<>();
-        adapter = new ArticleAdapter(getActivity(), articleList);
+        displayedArticles = new ArrayList<>();
+
+        adapter = new ArticleAdapter(getActivity(), displayedArticles);
+
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(currentMaxIndex != articleList.size()) {
+                            loadMoreArticles();
+                        }
+                    }
+                });
+
+            }
+        });
 
         intent = new Intent(getActivity().getApplicationContext(), ArticleView.class);
 
-        getArticles();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
@@ -262,20 +285,45 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void loadMoreArticles(){
+        displayedArticles.add(new Article(null, null));
+        adapter.notifyItemInserted(displayedArticles.size() - 1);
+        displayedArticles.remove(displayedArticles.size() - 1);
+
+        if(currentMaxIndex + 10 >= articleList.size()){
+            for(int i = currentMaxIndex; i < articleList.size(); i++){
+                displayedArticles.add(articleList.get(i));
+            }
+            currentMaxIndex = articleList.size();
+        } else {
+            for(int i = currentMaxIndex; i < currentMaxIndex + 10; i++){
+                displayedArticles.add(articleList.get(i));
+            }
+            currentMaxIndex += 10;
+        }
+
+        adapter.notifyDataChanged();
+
+    }
+
     private void prepareArticles() {
 
         updateList();
 
         articleList = myDataBaseClass.getArticles();
+        if (currentMaxIndex + 10 > articleList.size()){
+            displayedArticles = new ArrayList<>(articleList.subList(currentMaxIndex, articleList.size()));
+            currentMaxIndex = articleList.size();
+        } else {
+            displayedArticles = new ArrayList<>(articleList.subList(currentMaxIndex, currentMaxIndex + 10));
+            currentMaxIndex +=10;
+        }
 
-        adapter.updateList(articleList);
+        adapter.updateList(displayedArticles);
 
         adapter.notifyDataSetChanged();
 
         loadingIcon.setVisibility(View.GONE);
-
-        //loadingViewAnim.stop();
-
     }
 
 
