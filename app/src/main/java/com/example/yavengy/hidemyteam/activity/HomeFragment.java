@@ -167,6 +167,7 @@ public class HomeFragment extends Fragment {
                 if(!downloadingArticles) {
                     getArticles();
                     downloadingArticles = true;
+                    currentMaxIndex = 0;
                     Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
                 }
             }
