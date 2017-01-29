@@ -11,6 +11,7 @@ import com.example.yavengy.hidemyteam.R;
 import com.example.yavengy.hidemyteam.Util.DataBase;
 import com.example.yavengy.hidemyteam.Parallax.InterpolatorSelector;
 import com.example.yavengy.hidemyteam.Parallax.PEWImageView;
+import com.example.yavengy.hidemyteam.helper.OnLoadMoreListener;
 import com.example.yavengy.hidemyteam.model.Article;
 
 import java.util.List;
@@ -25,6 +26,10 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
     private Context mContext;
     private List<Article> articleList;
     private DataBase myDataBase;
+    private final int VIEW_TYPE_ITEM = 0;
+    private final int VIEW_TYPE_LOADING = 1;
+    private OnLoadMoreListener mOnLoadMoreListener;
+    private boolean isLoading = false, isMoreDataAvailable = true;
 
     public void updateList(List<Article> newList){
         articleList = newList;
@@ -40,6 +45,30 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
             title = (TextView) view.findViewById(R.id.title);
             image = (PEWImageView) view.findViewById(R.id.image);
         }
+
+        void bindData(Article article){
+
+            title.setText(article.getTitle());
+            image.setImageBitmap(article.getImage());
+
+            int width = screenWidth - (int) mainContext.getResources().getDimension(R.dimen.article_margin) * 2;
+
+            int totalHeight = (int) (width / 1.618);
+            int imageHeight = (int) (totalHeight * 0.8);
+            int textHeight = totalHeight - imageHeight;
+
+            title.getLayoutParams().height = textHeight;
+            image.getLayoutParams().height = imageHeight;
+
+            image.setInterpolator(InterpolatorSelector.interpolatorId(6));
+
+        }
+    }
+
+    public class LoadHolder extends RecyclerView.ViewHolder{
+        public LoadHolder(View itemView){
+            super(itemView);
+        }
     }
 
     public ArticleAdapter(Context mContext, List<Article> articleList) {
@@ -49,29 +78,48 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.article_card, parent, false);
 
-        return new MyViewHolder(itemView);
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+
+        if(viewType == VIEW_TYPE_ITEM){
+            View itemView = inflater.inflate(R.layout.article_card, parent, false);
+            return new MyViewHolder(itemView);
+        } else {
+            View itemView = inflater.inflate(R.layout.row_load,parent,false);
+            return new MyViewHolder(itemView);
+        }
     }
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, int position) {
         Article article = articleList.get(position);
-        holder.title.setText(article.getTitle());
-        holder.image.setImageBitmap(article.getImage());
 
-        int width = screenWidth - (int) mainContext.getResources().getDimension(R.dimen.article_margin)*2;
+        if(position >= getItemCount() - 1 && isMoreDataAvailable && !isLoading && mOnLoadMoreListener != null){
+            isLoading = true;
+            mOnLoadMoreListener.onLoadMore();
+        }
 
-        int totalHeight = (int) (width/1.618);
-        int imageHeight = (int) (totalHeight*0.8);
-        int textHeight = totalHeight - imageHeight;
+        if(getItemViewType(position) == VIEW_TYPE_ITEM){
+            ((MyViewHolder)holder).bindData(article);
+        }
+    }
 
-        holder.title.getLayoutParams().height = textHeight;
-        holder.image.getLayoutParams().height = imageHeight;
+    @Override
+    public int getItemViewType(int position){
+        if(articleList.get(position).getTitle() != null){
+            return VIEW_TYPE_ITEM;
+        } else {
+            return VIEW_TYPE_LOADING;
+        }
+    }
 
-        holder.image.setInterpolator(InterpolatorSelector.interpolatorId(6));
+    public void setMoreDataAvailable(boolean moreDataAvailable){
+        this.isMoreDataAvailable = moreDataAvailable;
+    }
 
+    public void notifyDataChanged(){
+        notifyDataSetChanged();
+        isLoading = false;
     }
 
     @Override
@@ -79,13 +127,15 @@ public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.MyViewHo
         return articleList.size();
     }
 
-    //@Override
     public void onItemDismiss(int position) {
         myDataBase.markDeleted(articleList.get(position).getTitle());
 
         articleList.remove(position);
         notifyItemRemoved(position);
+    }
 
+    public void setOnLoadMoreListener(OnLoadMoreListener mOnLoadMoreListener){
+        this.mOnLoadMoreListener = mOnLoadMoreListener;
     }
 
 }

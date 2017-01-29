@@ -3,20 +3,17 @@ package com.example.yavengy.hidemyteam.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +23,7 @@ import android.widget.Toast;
 
 import com.example.yavengy.hidemyteam.Util.DataBase;
 import com.example.yavengy.hidemyteam.Util.TagNFilters;
+import com.example.yavengy.hidemyteam.helper.OnLoadMoreListener;
 import com.example.yavengy.hidemyteam.helper.SimpleItemTouchHelperCallback;
 import com.example.yavengy.hidemyteam.model.Article;
 import com.example.yavengy.hidemyteam.adapter.ArticleAdapter;
@@ -54,7 +52,10 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private ArticleAdapter adapter;
     private List<Article> articleList;
-    boolean emptyArray;
+    private List<Article> displayedArticles;
+    private boolean emptyArray;
+    private int currentMaxIndex = 0;
+    private boolean downloadingArticles = false;
 
     public ImageView loadingIcon = null;
     private AnimationDrawable loadingViewAnim = null;
@@ -88,6 +89,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
 
         loadingIcon = (ImageView) rootView.findViewById(R.id.loadingView);
@@ -95,17 +97,35 @@ public class HomeFragment extends Fragment {
         loadingIcon.setBackgroundResource(R.drawable.loading_animation);
         loadingViewAnim = (AnimationDrawable) loadingIcon.getBackground();
         loadingIcon.setVisibility(View.VISIBLE);
-
         loadingViewAnim.start();
 
         myDataBaseClass = new DataBase();
 
+        //getArticles();
+
         articleList = new ArrayList<>();
-        adapter = new ArticleAdapter(getActivity(), articleList);
+        displayedArticles = new ArrayList<>();
+
+        adapter = new ArticleAdapter(getActivity(), displayedArticles);
+
+        adapter.setOnLoadMoreListener(new OnLoadMoreListener() {
+            @Override
+            public void onLoadMore() {
+
+                recyclerView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(currentMaxIndex != articleList.size()) {
+                            loadMoreArticles();
+                        }
+                    }
+                });
+
+            }
+        });
 
         intent = new Intent(getActivity().getApplicationContext(), ArticleView.class);
 
-        getArticles();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
         ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(adapter);
@@ -117,7 +137,7 @@ public class HomeFragment extends Fragment {
         recyclerView.addItemDecoration(new HomeFragment.GridSpacingItemDecoration(2, dpToPx(0), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        updateList();
+        //updateList();
 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new MainActivity.ClickListener() {
             @Override
@@ -144,14 +164,16 @@ public class HomeFragment extends Fragment {
                     }
                 }
 
-                if(!emptyArray) {
+                if(!downloadingArticles) {
                     getArticles();
+                    downloadingArticles = true;
+                    currentMaxIndex = 0;
+                    Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
                 }
-
-                Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
             }
         });
 
+        prepareArticles();
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -166,7 +188,7 @@ public class HomeFragment extends Fragment {
         super.onDetach();
     }
 
-    public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
+        public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
 
         @Override
         protected Bitmap doInBackground(String... urls) {
@@ -262,20 +284,45 @@ public class HomeFragment extends Fragment {
 
     }
 
+    private void loadMoreArticles(){
+        displayedArticles.add(new Article(null, null));
+        adapter.notifyItemInserted(displayedArticles.size() - 1);
+        displayedArticles.remove(displayedArticles.size() - 1);
+
+        if(currentMaxIndex + 10 >= articleList.size()){
+            for(int i = currentMaxIndex; i < articleList.size(); i++){
+                displayedArticles.add(articleList.get(i));
+            }
+            currentMaxIndex = articleList.size();
+        } else {
+            for(int i = currentMaxIndex; i < currentMaxIndex + 10; i++){
+                displayedArticles.add(articleList.get(i));
+            }
+            currentMaxIndex += 10;
+        }
+
+        adapter.notifyDataChanged();
+
+    }
+
     private void prepareArticles() {
 
         updateList();
 
         articleList = myDataBaseClass.getArticles();
+        if (currentMaxIndex + 10 > articleList.size()){
+            displayedArticles = new ArrayList<>(articleList.subList(currentMaxIndex, articleList.size()));
+            currentMaxIndex = articleList.size();
+        } else {
+            displayedArticles = new ArrayList<>(articleList.subList(currentMaxIndex, currentMaxIndex + 10));
+            currentMaxIndex +=10;
+        }
 
-        adapter.updateList(articleList);
+        adapter.updateList(displayedArticles);
 
         adapter.notifyDataSetChanged();
 
         loadingIcon.setVisibility(View.GONE);
-
-        //loadingViewAnim.stop();
-
     }
 
 
@@ -321,7 +368,7 @@ public class HomeFragment extends Fragment {
             }
         }
         prepareArticles();
-
+        downloadingArticles = false;
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
