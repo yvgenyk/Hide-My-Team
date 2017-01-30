@@ -3,11 +3,8 @@ package com.example.yavengy.hidemyteam.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.graphics.drawable.AnimationDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -21,8 +18,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.example.yavengy.hidemyteam.Util.BrContentDownload;
 import com.example.yavengy.hidemyteam.Util.DataBase;
-import com.example.yavengy.hidemyteam.Util.TagNFilters;
 import com.example.yavengy.hidemyteam.helper.OnLoadMoreListener;
 import com.example.yavengy.hidemyteam.helper.SimpleItemTouchHelperCallback;
 import com.example.yavengy.hidemyteam.model.Article;
@@ -30,21 +27,9 @@ import com.example.yavengy.hidemyteam.adapter.ArticleAdapter;
 import com.example.yavengy.hidemyteam.R;
 import com.example.yavengy.hidemyteam.Util.RecyclerTouchListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
-import static com.example.yavengy.hidemyteam.Util.DbBitmapUtility.getBytes;
-import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
 import static com.example.yavengy.hidemyteam.activity.MainActivity.fab;
 
 public class HomeFragment extends Fragment {
@@ -53,16 +38,16 @@ public class HomeFragment extends Fragment {
     private ArticleAdapter adapter;
     private List<Article> articleList;
     private List<Article> displayedArticles;
-    private boolean emptyArray;
-    private int currentMaxIndex = 0;
     private boolean downloadingArticles = false;
 
     public ImageView loadingIcon = null;
     private AnimationDrawable loadingViewAnim = null;
 
+    public static int currentMaxIndex = 0;
+
     DataBase myDataBaseClass;
 
-    TagNFilters tagsNFilters;
+    BrContentDownload brContentDownload;
 
     Intent intent;
 
@@ -73,17 +58,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        tagsNFilters = new TagNFilters(getActivity().getString(R.string.tags_api_call));
-
-        emptyArray = true;
-
-        for(int i = 0; i < filterArray.length; i++){
-            if(filterArray[i] == 1){
-                emptyArray = false;
-                break;
-            }
-        }
     }
 
     @Override
@@ -101,7 +75,7 @@ public class HomeFragment extends Fragment {
 
         myDataBaseClass = new DataBase();
 
-        //getArticles();
+        brContentDownload = new BrContentDownload();
 
         articleList = new ArrayList<>();
         displayedArticles = new ArrayList<>();
@@ -137,8 +111,6 @@ public class HomeFragment extends Fragment {
         recyclerView.addItemDecoration(new HomeFragment.GridSpacingItemDecoration(2, dpToPx(0), true));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        //updateList();
-
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new MainActivity.ClickListener() {
             @Override
             public void onClick(View view, int position) {
@@ -156,18 +128,10 @@ public class HomeFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Click action
-                for(int i = 0; i < filterArray.length; i++){
-                    if(filterArray[i] == 1){
-                        emptyArray = false;
-                        break;
-                    }
-                }
 
                 if(!downloadingArticles) {
-                    getArticles();
                     downloadingArticles = true;
-                    currentMaxIndex = 0;
+                    getArticlesFromBR();
                     Toast.makeText(getActivity(), "Updating", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -188,100 +152,15 @@ public class HomeFragment extends Fragment {
         super.onDetach();
     }
 
-        public class DownloadImage extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String... urls) {
-
-            try {
-                URL url = new URL(urls[0]);
-
-                HttpURLConnection connection = (HttpURLConnection)url.openConnection();
-
-                connection.connect();
-
-                InputStream inputStream = connection.getInputStream();
-
-                Bitmap myBitmap = BitmapFactory.decodeStream(inputStream);
-
-                return myBitmap;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-    }
-
-    public class DownloadContext extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            String result = "";
-            URL url;
-            HttpURLConnection urlConnection = null;
-
-            try {
-                url = new URL(urls[0]);
-
-                urlConnection = (HttpURLConnection) url.openConnection();
-
-                InputStream in = urlConnection.getInputStream();
-
-                InputStreamReader reader = new InputStreamReader(in);
-
-                int data = reader.read();
-
-                while (data != -1) {
-
-                    char current = (char) data;
-
-                    result += current;
-
-                    data = reader.read();
-
-                }
-
-                return result;
-
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
-
-            saveToDb(result);
-
-        }
-
-    }
-
     public void updateList(){
         recyclerView.setAdapter(adapter);
     }
 
-    public void getArticles() {
-
-        String filteredTags = tagsNFilters.getTags();;
-
-        String url = "http://bleacherreport.com/api/front/lead_articles.json?tags=" +
-                filteredTags + "&appversion=1.4&perpage=40";
-
-        HomeFragment.DownloadContext task = new HomeFragment.DownloadContext();
-
-        task.execute(url);
-
+    public void getArticlesFromBR() {
+        brContentDownload.getArticles();
+        currentMaxIndex = 0;
+        prepareArticles();
+        downloadingArticles = false;
     }
 
     private void loadMoreArticles(){
@@ -323,52 +202,6 @@ public class HomeFragment extends Fragment {
         adapter.notifyDataSetChanged();
 
         loadingIcon.setVisibility(View.GONE);
-    }
-
-
-    public void saveToDb (String result){
-
-        String title;
-
-        if (result != null) {
-
-            String allArticles = myDataBaseClass.getAllPermalinks();
-
-            try {
-
-                JSONArray arr = new JSONArray(result);
-
-                for (int i = 0; i < arr.length(); i++) {
-
-
-                    if (!arr.get(i).toString().equals("null")) {
-                        if (arr.getJSONObject(i).has("tag")) {
-
-                            title = arr.getJSONObject(i).getString("title");
-
-                            title = title.replaceAll(":", " -");
-                            title = title.replaceAll("'", "");
-
-                            if (!allArticles.contains(arr.getJSONObject(i).getString("permalink"))) {
-
-                                myDataBaseClass.saveArticle(title,
-                                        getBytes(new HomeFragment.DownloadImage().execute(arr.getJSONObject(i).getString("primary_image_650x440")).get()),
-                                        arr.getJSONObject(i).getString("permalink"));
-                            }
-                        }
-                    }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        prepareArticles();
-        downloadingArticles = false;
     }
 
     public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {

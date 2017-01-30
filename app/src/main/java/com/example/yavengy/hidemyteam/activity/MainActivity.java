@@ -17,14 +17,17 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.example.yavengy.hidemyteam.R;
+import com.example.yavengy.hidemyteam.Util.BrContentDownload;
 
 import static com.example.yavengy.hidemyteam.Util.TagNFilters.filterArray;
+import static com.example.yavengy.hidemyteam.activity.HomeFragment.currentMaxIndex;
 
 public class MainActivity extends AppCompatActivity implements FragmentDrawer.FragmentDrawerListener {
 
     private Toolbar mToolbar;
     private FragmentDrawer drawerFragment;
     private boolean isHomePage = true;
+    private BrContentDownload brContentDownload;
     public static Context mainContext;
     public static FloatingActionButton fab;
     public static int screenWidth;
@@ -64,6 +67,9 @@ public class MainActivity extends AppCompatActivity implements FragmentDrawer.Fr
         if (id == R.id.action_back) {
             isHomePage = true;
             updateMenu();
+            brContentDownload = new BrContentDownload();
+            brContentDownload.getArticles();
+            currentMaxIndex = 0;
             saveFilterArray();
             displayView(0);
             //return true;
